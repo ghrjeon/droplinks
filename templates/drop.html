@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Drop Link - Droplink{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1 class="mb-4">Drop a Link</h1>
+    <form action="/submit" method="post" class="needs-validation" novalidate>
+        <div class="mb-3">
+            <label for="topic" class="form-label">Topic</label>
+            <select class="form-select" id="topic" name="topic" required>
+                <option value="">Select a topic</option>
+                {% for topic in topics %}
+                <option value="{{ topic.name }}">{{ topic.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label for="url" class="form-label">URL</label>
+            <input type="url" class="form-control" id="url" name="url" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="source" class="form-label">Source</label>
+            <input type="text" class="form-control" id="source" name="source" placeholder="">
+        </div>
+        
+        <div class="mb-3">
+            <label for="notes" class="form-label">Notes</label>
+            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="/manage" class="btn btn-outline-secondary">Manage Topics</a>
+        </div>
+    </form>
+    
+    <div class="mt-4">
+        <a href="/view" class="btn btn-secondary">View All Links</a>
+    </div>
+</div>
+{% endblock %} 
