@@ -35,6 +35,16 @@
                                 <i class="fas fa-edit"></i> Manage Links
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.url.path == '/companies' %}active{% endif %}" href="/companies">
+                                <i class="fas fa-building"></i> Cool Companies
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.url.path == '/videos' %}active{% endif %}" href="/videos">
+                                <i class="fas fa-video"></i> Videos
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

@@ -17,7 +17,8 @@
                 <tr>
                     <th style="width: 5%">ID</th>
                     <th style="width: 10%">Topic</th>
-                    <th style="width: 45%">Title</th>
+                    <th style="width: 35%">Title</th>
+                    <th style="width: 20%">Notes</th>
                     <th style="width: 10%">Source</th>
                     <th style="width: 10%">Date</th>
                     <th style="width: 10%">Action</th>
@@ -33,6 +34,7 @@
                             {{ link.title }}
                         </a>
                     </td>
+                    <td>{{ link.notes or '' }}</td>
                     <td>{{ link.source or '' }}</td>
                     <td>{{ link.date.split('T')[0] }}</td>
                     <td class="text-end">
@@ -59,7 +61,7 @@
                 <h5 class="modal-title">Edit Link</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="editLinkForm" method="post">
+            <form id="editLinkForm" method="post" enctype="application/x-www-form-urlencoded">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="editTopic" class="form-label">Topic</label>
@@ -72,6 +74,18 @@
                     <div class="mb-3">
                         <label for="editUrl" class="form-label">URL</label>
                         <input type="url" class="form-control" id="editUrl" name="url" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="editTitle" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editStatus" class="form-label">Status</label>
+                        <select class="form-select" id="editStatus" name="status" required>
+                            <option value="new">New</option>
+                            <option value="read">Read</option>
+                            <option value="read-again">Read Again</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="editSource" class="form-label">Source</label>
@@ -127,12 +141,16 @@
         
         document.getElementById('editTopic').value = link.topic;
         document.getElementById('editUrl').value = link.url;
+        document.getElementById('editTitle').value = link.title;
+        document.getElementById('editStatus').value = link.status;
         document.getElementById('editSource').value = link.source || '';
         document.getElementById('editNotes').value = link.notes || '';
         
         console.log('Form values set:', {
             topic: document.getElementById('editTopic').value,
             url: document.getElementById('editUrl').value,
+            title: document.getElementById('editTitle').value,
+            status: document.getElementById('editStatus').value,
             source: document.getElementById('editSource').value,
             notes: document.getElementById('editNotes').value
         });
