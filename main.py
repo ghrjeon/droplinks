@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import requests
 from bs4 import BeautifulSoup
 from typing import Optional
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -17,6 +18,15 @@ app = FastAPI()
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+# Add CORS middleware for Vercel
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Initialize Supabase client
 supabase: Client = create_client(
