@@ -12,13 +12,21 @@ A comprehensive link management system built with FastAPI and Supabase, designed
   
 - **Topic Management**
   - Create and organize topics
-  - Delete topics (with safety check for in-use topics)
+  - Delete topics
   
 - **Additional Features**
   - Company tracking with notes
   - Video library with topic organization
   - Clean and responsive interface
   - Automatic date tracking
+
+
+## Preview
+*View Links
+<img src="assets/preview1.png" width="600" alt="Drop Link Page"> <br>
+*Drop Link
+<img src="assets/preview2.png" width="600" alt="Drop Link Page">
+
 
 ## Setup
 
