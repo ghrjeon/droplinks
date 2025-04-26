@@ -6,9 +6,29 @@
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="page-title">Links</h1>
-        <a href="/" class="btn btn-primary">
-            <i class="fas fa-plus"></i> New Link
-        </a>
+        <div class="d-flex gap-3 align-items-center">
+            <div class="d-flex align-items-center">
+                <label for="topicFilter" class="me-2">Topic:</label>
+                <select id="topicFilter" class="form-select" style="width: 200px; border-radius: 8px;">
+                    <option value="">All Topics</option>
+                    {% for topic in topics %}
+                    <option value="{{ topic.name }}">{{ topic.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="d-flex align-items-center">
+                <label for="sourceFilter" class="me-2">Source:</label>
+                <select id="sourceFilter" class="form-select" style="width: 200px; border-radius: 8px;">
+                    <option value="">All Sources</option>
+                    {% for source in sources %}
+                    <option value="{{ source }}">{{ source }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Link
+            </a>
+        </div>
     </div>
     
     <div class="table-container">
@@ -109,7 +129,7 @@
 {% block scripts %}
 <script>
     $(document).ready(function() {
-        $('#linksTable').DataTable({
+        const table = $('#linksTable').DataTable({
             "order": [[0, "desc"]],
             "pageLength": 15,
             "language": {
@@ -123,6 +143,18 @@
                     "previous": "←"
                 }
             }
+        });
+
+        // Topic filter functionality
+        $('#topicFilter').on('change', function() {
+            const selectedTopic = $(this).val();
+            table.column(1).search(selectedTopic).draw();
+        });
+
+        // Source filter functionality
+        $('#sourceFilter').on('change', function() {
+            const selectedSource = $(this).val();
+            table.column(4).search(selectedSource).draw();
         });
 
         // Add click handler for edit buttons

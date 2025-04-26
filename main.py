@@ -76,7 +76,17 @@ async def submit_link(
 async def view_links(request: Request):
     response = supabase.table('links').select("*").order('id', desc=True).execute()
     links = response.data
-    return templates.TemplateResponse("view.html", {"request": request, "links": links})
+    topics = get_topics()
+    
+    # Get unique non-empty sources
+    sources = sorted(set(link['source'] for link in links if link['source']))
+    
+    return templates.TemplateResponse("view.html", {
+        "request": request, 
+        "links": links,
+        "topics": topics,
+        "sources": sources
+    })
 
 @app.get("/manage")
 async def manage_page(request: Request):
@@ -165,10 +175,15 @@ async def manage_topics(request: Request):
 async def manage_links(request: Request):
     topics = get_topics()
     links = supabase.table('links').select("*").order('id', desc=True).execute().data
+    
+    # Get unique non-empty sources
+    sources = sorted(set(link['source'] for link in links if link['source']))
+    
     return templates.TemplateResponse("manage_links.html", {
         "request": request,
         "topics": topics,
-        "links": links
+        "links": links,
+        "sources": sources
     })
 
 @app.get("/companies")

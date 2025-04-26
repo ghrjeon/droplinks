@@ -49,6 +49,11 @@ main {
 
 .table {
     margin-bottom: 0;
+    table-layout: fixed;
+}
+
+.table-fixed {
+    table-layout: fixed;
 }
 
 .table thead th {
@@ -66,6 +71,20 @@ main {
     color: #1a202c;
     border-bottom: 1px solid #edf2f7;
     font-size: 0.875rem;
+    vertical-align: top;
+}
+
+.table tbody td.notes-cell {
+    width: 200px;
+    max-width: 200px;
+}
+
+.table tbody td.notes-cell .notes-content {
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-height: 100px;
+    overflow-y: auto;
 }
 
 .table tbody tr:last-child td {

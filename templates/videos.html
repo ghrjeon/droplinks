@@ -4,80 +4,94 @@
 
 {% block content %}
 <div class="container-fluid mt-4">
-    <div class="row">
-        <!-- Add Video Form -->
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">Add New Video</h5>
-                    <form action="/video/add" method="post">
-                        <div class="mb-3">
-                            <label for="topic" class="form-label">Topic</label>
-                            <select class="form-select" id="topic" name="topic" required>
-                                <option value="">Select a topic</option>
-                                {% for topic in topics %}
-                                <option value="{{ topic.name }}">{{ topic.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="link" class="form-label">Video Link</label>
-                            <input type="url" class="form-control" id="link" name="link" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="notes" class="form-label">Notes</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add Video</button>
-                    </form>
-                </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title">Videos</h1>
+        <div class="d-flex gap-3 align-items-center">
+            <div class="d-flex align-items-center">
+                <label for="topicFilter" class="me-2">Topic:</label>
+                <select id="topicFilter" class="form-select" style="width: 200px; border-radius: 8px;">
+                    <option value="">All Topics</option>
+                    {% for topic in topics %}
+                    <option value="{{ topic.name }}">{{ topic.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#addVideoForm" aria-expanded="false" aria-controls="addVideoForm">
+                <i class="fas fa-plus"></i> Add New Video
+            </button>
         </div>
+    </div>
 
-        <!-- Videos Table -->
-        <div class="col-md-8">
-            <div class="table-container">
-                <table id="videosTable" class="table">
-                    <thead>
-                        <tr>
-                            <th style="width: 10%">Date</th>
-                            <th style="width: 15%">Topic</th>
-                            <th style="width: 35%">Title</th>
-                            <th style="width: 20%">Notes</th>
-                            <th style="width: 20%">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for video in videos %}
-                        <tr>
-                            <td class="text-nowrap">{{ video.date.split('T')[0] }}</td>
-                            <td>{{ video.topic }}</td>
-                            <td>
-                                <a href="{{ video.link }}" target="_blank" class="text-decoration-none">
-                                    {{ video.title }}
-                                </a>
-                            </td>
-                            <td>{{ video.notes or '' }}</td>
-                            <td class="text-end">
-                                <button type="button" class="btn btn-outline-primary btn-sm me-1" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#editVideoModal"
-                                        data-video-id="{{ video.id }}"
-                                        data-video-topic="{{ video.topic }}"
-                                        data-video-link="{{ video.link }}"
-                                        data-video-notes="{{ video.notes or '' }}">
-                                    Edit
-                                </button>
-                                <form action="/video/delete/{{ video.id }}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this video?');">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <!-- Add Video Form -->
+    <div class="collapse mb-4" id="addVideoForm">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Add New Video</h5>
+                <form action="/video/add" method="post">
+                    <div class="mb-3">
+                        <label for="topic" class="form-label">Topic</label>
+                        <select class="form-select" id="topic" name="topic" required>
+                            <option value="">Select a topic</option>
+                            {% for topic in topics %}
+                            <option value="{{ topic.name }}">{{ topic.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="link" class="form-label">Video Link</label>
+                        <input type="url" class="form-control" id="link" name="link" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Video</button>
+                </form>
             </div>
         </div>
+    </div>
+
+    <!-- Videos Table -->
+    <div class="table-container">
+        <table id="videosTable" class="table">
+            <thead>
+                <tr>
+                    <th style="width: 10%">Date</th>
+                    <th style="width: 15%">Topic</th>
+                    <th style="width: 35%">Title</th>
+                    <th style="width: 20%">Notes</th>
+                    <th style="width: 20%">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for video in videos %}
+                <tr>
+                    <td class="text-nowrap">{{ video.date.split('T')[0] }}</td>
+                    <td>{{ video.topic }}</td>
+                    <td>
+                        <a href="{{ video.link }}" target="_blank" class="text-decoration-none">
+                            {{ video.title }}
+                        </a>
+                    </td>
+                    <td>{{ video.notes or '' }}</td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-outline-primary btn-sm me-1" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#editVideoModal"
+                                data-video-id="{{ video.id }}"
+                                data-video-topic="{{ video.topic }}"
+                                data-video-link="{{ video.link }}"
+                                data-video-notes="{{ video.notes or '' }}">
+                            Edit
+                        </button>
+                        <form action="/video/delete/{{ video.id }}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this video?');">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -122,7 +136,7 @@
 {% block scripts %}
 <script>
     $(document).ready(function() {
-        $('#videosTable').DataTable({
+        const table = $('#videosTable').DataTable({
             "order": [[0, "desc"]], // Sort by date descending
             "pageLength": 15,
             "language": {
@@ -138,6 +152,12 @@
             }
         });
 
+        // Topic filter functionality
+        $('#topicFilter').on('change', function() {
+            const selectedTopic = $(this).val();
+            table.column(1).search(selectedTopic).draw();
+        });
+
         // Handle edit modal
         $('#editVideoModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
@@ -151,6 +171,26 @@
             modal.find('#editVideoTopic').val(videoTopic);
             modal.find('#editVideoLink').val(videoLink);
             modal.find('#editVideoNotes').val(videoNotes);
+        });
+
+        // Handle form collapse state
+        const addVideoForm = document.getElementById('addVideoForm');
+        const toggleButton = document.querySelector('[data-bs-target="#addVideoForm"]');
+        
+        // Check if there was a previous state
+        const wasExpanded = localStorage.getItem('addVideoFormExpanded') === 'true';
+        if (wasExpanded) {
+            addVideoForm.classList.add('show');
+            toggleButton.setAttribute('aria-expanded', 'true');
+        }
+
+        // Store state when toggled
+        addVideoForm.addEventListener('shown.bs.collapse', function () {
+            localStorage.setItem('addVideoFormExpanded', 'true');
+        });
+        
+        addVideoForm.addEventListener('hidden.bs.collapse', function () {
+            localStorage.setItem('addVideoFormExpanded', 'false');
         });
     });
 
