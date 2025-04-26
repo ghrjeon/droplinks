@@ -22,9 +22,9 @@ A comprehensive link management system built with FastAPI and Supabase, designed
 
 
 ## Preview
-*View Links
+*View Links <br>
 <img src="assets/preview1.png" width="600" alt="Drop Link Page"> <br>
-*Drop Link
+*Drop Link<br>
 <img src="assets/preview2.png" width="600" alt="Drop Link Page">
 
 
