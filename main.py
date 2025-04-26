@@ -10,6 +10,11 @@ import requests
 from bs4 import BeautifulSoup
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -54,27 +59,85 @@ async def drop_page(request: Request):
 
 @app.post("/submit")
 async def submit_link(
+    request: Request,
     topic: str = Form(...),
     url: str = Form(...),
+    status: str = Form(...),
     source: Optional[str] = Form(None),
     notes: Optional[str] = Form(None)
 ):
-    # Fetch title from URL
-    title = get_url_title(url)
-    
-    # Insert new link with simplified date format
-    data = {
-        "topic": topic,
-        "url": url,
-        "title": title,
-        "source": source if source else "",
-        "notes": notes if notes else "",
-        "status": "new",  # Default status for new links
-        "date": datetime.now().strftime("%Y-%m-%d")
-    }
-    
-    supabase.table('links').insert(data).execute()
-    return RedirectResponse(url="/view", status_code=303)
+    try:
+        # Log the incoming request
+        logger.info(f"Submitting link with topic: {topic}, url: {url}, status: {status}")
+        
+        # Fetch title from URL
+        title = get_url_title(url)
+        logger.info(f"Fetched title: {title}")
+        
+        # Prepare data - let Supabase handle ID generation
+        data = {
+            "topic": topic,
+            "url": url,
+            "title": title,
+            "source": source if source else "",
+            "notes": notes if notes else "",
+            "status": status,
+            "date": datetime.now().strftime("%Y-%m-%d")
+        }
+        
+        # Insert into Supabase
+        try:
+            logger.info(f"Attempting to insert data: {data}")
+            result = supabase.table('links').insert(data).execute()
+            logger.info(f"Supabase response: {result}")
+            return RedirectResponse(url="/view", status_code=303)
+        except Exception as e:
+            logger.error(f"Supabase insertion error: {str(e)}")
+            # Check if it's a duplicate key error
+            if '"links_pkey"' in str(e):
+                # Let's try to get the next available ID
+                try:
+                    # Get the highest ID currently in use
+                    max_id_result = supabase.table('links').select('id').order('id', desc=True).limit(1).execute()
+                    next_id = 1 if not max_id_result.data else max_id_result.data[0]['id'] + 1
+                    
+                    # Try inserting with the next ID
+                    data['id'] = next_id
+                    result = supabase.table('links').insert(data).execute()
+                    logger.info(f"Successfully inserted with manual ID: {next_id}")
+                    return RedirectResponse(url="/view", status_code=303)
+                except Exception as inner_e:
+                    logger.error(f"Failed to insert with manual ID: {str(inner_e)}")
+                    return templates.TemplateResponse(
+                        "drop.html",
+                        {
+                            "request": request,
+                            "topics": get_topics(),
+                            "error": "Failed to save link. Please try again later."
+                        },
+                        status_code=500
+                    )
+            return templates.TemplateResponse(
+                "drop.html",
+                {
+                    "request": request,
+                    "topics": get_topics(),
+                    "error": f"Database error: {str(e)}"
+                },
+                status_code=500
+            )
+            
+    except Exception as e:
+        logger.error(f"Error in submit_link: {str(e)}")
+        return templates.TemplateResponse(
+            "drop.html",
+            {
+                "request": request,
+                "topics": get_topics(),
+                "error": f"Error: {str(e)}"
+            },
+            status_code=500
+        )
 
 @app.get("/view")
 async def view_links(request: Request):

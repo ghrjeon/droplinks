@@ -5,6 +5,14 @@
 {% block content %}
 <div class="container-fluid mt-4">
     <h1 class="mb-4">Drop a Link</h1>
+    
+    {% if error %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ error }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    
     <form action="/submit" method="post" class="needs-validation" novalidate>
         <div class="mb-3">
             <label for="topic" class="form-label">Topic</label>
@@ -14,35 +22,41 @@
                 <option value="{{ topic.name }}">{{ topic.name }}</option>
                 {% endfor %}
             </select>
+            <div class="invalid-feedback">Please select a topic.</div>
         </div>
         
         <div class="mb-3">
             <label for="url" class="form-label">URL</label>
-            <input type="url" class="form-control" id="url" name="url" required>
+            <input type="url" class="form-control" id="url" name="url" required 
+                   placeholder="">
+            <div class="invalid-feedback">Please enter a valid URL.</div>
         </div>
         
         <div class="mb-3">
             <label for="status" class="form-label">Status</label>
             <select class="form-select" id="status" name="status" required>
-                <option value="new">New</option>
+                <option value="new" selected>New</option>
                 <option value="read">Read</option>
                 <option value="read-again">Read Again</option>
             </select>
+            <div class="invalid-feedback">Please select a status.</div>
         </div>
         
         <div class="mb-3">
-            <label for="source" class="form-label">Source</label>
-            <input type="text" class="form-control" id="source" name="source" placeholder="">
+            <label for="source" class="form-label">Source (Optional)</label>
+            <input type="text" class="form-control" id="source" name="source" 
+                   placeholder="">
         </div>
         
         <div class="mb-3">
-            <label for="notes" class="form-label">Notes</label>
-            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+            <label for="notes" class="form-label">Notes (Optional)</label>
+            <textarea class="form-control" id="notes" name="notes" rows="3"
+                      placeholder=""></textarea>
         </div>
         
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary">Submit</button>
-            <a href="/manage" class="btn btn-outline-secondary">Manage Topics</a>
+            <a href="/manage/topics" class="btn btn-outline-secondary">Manage Topics</a>
         </div>
     </form>
     
@@ -50,4 +64,21 @@
         <a href="/view" class="btn btn-secondary">View All Links</a>
     </div>
 </div>
+
+<script>
+// Enable form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
 {% endblock %} 
