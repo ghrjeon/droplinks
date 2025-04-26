@@ -49,17 +49,11 @@ async def submit_link(
     source: Optional[str] = Form(None),
     notes: Optional[str] = Form(None)
 ):
-    # Get current count of links to generate ID
-    response = supabase.table('links').select('id').execute()
-    current_count = len(response.data)
-    new_id = current_count + 1
-    
     # Fetch title from URL
     title = get_url_title(url)
     
     # Insert new link with simplified date format
     data = {
-        "id": new_id,
         "topic": topic,
         "url": url,
         "title": title,
@@ -86,16 +80,6 @@ async def view_links(request: Request):
         "links": links,
         "topics": topics,
         "sources": sources
-    })
-
-@app.get("/manage")
-async def manage_page(request: Request):
-    topics = get_topics()
-    links = supabase.table('links').select("*").order('id', desc=True).execute().data
-    return templates.TemplateResponse("manage.html", {
-        "request": request,
-        "topics": topics,
-        "links": links
     })
 
 @app.post("/topic/add")
