@@ -86,11 +86,12 @@
                 <tr>
                     <th style="width: 5%">ID</th>
                     <th style="width: 15%">Topic</th>
-                    <th style="width: 35%">Title</th>
+                    <th style="width: 33%">Title</th>
                     <th style="width: 15%">Notes</th>
                     <th style="width: 10%">Source</th>
                     <th style="width: 10%">Date</th>
                     <th style="width: 10%">Status</th>
+                    <th style="width: 7%">Star</th>
                     <th style="width: 0">Random</th>
                 </tr>
             </thead>
@@ -114,6 +115,16 @@
                             <option value="read-again" {% if link.status == 'read-again' %}selected{% endif %}>Again</option>
                         </select>
                     </td>
+                    <td data-star="{{ link.star }}">
+                        <select style= 'border: none;' class="form-select form-select-sm star-select" data-link-id="{{ link.id }}">
+                            <option value="0" {% if link.star == 0 %}selected{% endif %}>⭐</option>
+                            <option value="1" {% if link.star == 1 %}selected{% endif %}>1</option>
+                            <option value="2" {% if link.star == 2 %}selected{% endif %}>2</option>
+                            <option value="3" {% if link.star == 3 %}selected{% endif %}>3</option>
+                            <option value="4" {% if link.star == 4 %}selected{% endif %}>4</option>
+                            <option value="5" {% if link.star == 5 %}selected{% endif %}>5</option>
+                        </select>
+                    </td>
                     <td>0</td>
                 </tr>
                 {% endfor %}
@@ -131,7 +142,7 @@
             "pageLength": 15,
             "columnDefs": [
                 {
-                    "targets": [6],
+                    "targets": [6, 7],
                     "render": function(data, type, row) {
                         if (type === 'sort') {
                             return $(data).find('option:selected').val();
@@ -140,7 +151,7 @@
                     }
                 },
                 {
-                    "targets": [7],
+                    "targets": [8],
                     "visible": false
                 }
             ],
@@ -203,6 +214,33 @@
         
         addLinkForm.addEventListener('hidden.bs.collapse', function () {
             localStorage.setItem('addLinkFormExpanded', 'false');
+        });
+
+
+        // Handle star changes
+        $(document).on('change', '.star-select', function() {
+            const linkId = $(this).data('link-id');
+            const newStar = $(this).val();
+            const $td = $(this).closest('td');
+
+            fetch(`/link/star/${linkId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ star: newStar })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                $td.attr('data-star', newStar);
+                table.draw();
+            })
+            .catch(error => {
+                console.error('Error updating star:', error);
+                alert('Failed to update star. Please try again.');
+            });
         });
 
         // Handle status changes
