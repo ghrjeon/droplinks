@@ -361,10 +361,13 @@ async def update_link_status(id: int, status_data: dict = Body(...), auth=Depend
 async def update_link_star(id: int, star_data: dict = Body(...), auth=Depends(verify_auth)):
     try:
         star = star_data.get('star')
-        if not star:
+        if star is None:
             raise HTTPException(status_code=400, detail="Star is required")
             
-        if not isinstance(star, int):
+        # Convert star to integer if it's a string
+        try:
+            star = int(star)
+        except (ValueError, TypeError):
             raise HTTPException(status_code=400, detail="Invalid star value")
             
         data = {
